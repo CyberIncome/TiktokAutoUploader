@@ -2,7 +2,7 @@ from .Config import Config
 
 from moviepy.editor import *
 from moviepy.editor import VideoFileClip, AudioFileClip
-from pytube import YouTube
+from pytubefix import YouTube
 import time, os
 
 class Video:

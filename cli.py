@@ -1,12 +1,14 @@
+# File: cli.py
+
 import argparse
 from tiktok_uploader import tiktok, Video
 from tiktok_uploader.basics import eprint
 from tiktok_uploader.Config import Config
 import sys, os
 
+# This __name__ == "__main__" block is correct. It should NOT contain any Flask code.
 if __name__ == "__main__":
     _ = Config.load("./config.txt")
-    # print(Config.get().cookies_dir)
     parser = argparse.ArgumentParser(description="TikTokAutoUpload CLI, scheduled and immediate uploads")
     subparsers = parser.add_subparsers(dest="subcommand")
 
@@ -18,6 +20,7 @@ if __name__ == "__main__":
     upload_parser = subparsers.add_parser("upload", help="Upload video on TikTok")
     upload_parser.add_argument("-u", "--users", help="Enter cookie name from login", required=True)
     upload_parser.add_argument("-v", "--video", help="Path to video file")
+    # ... all your other arguments ...
     upload_parser.add_argument("-yt", "--youtube", help="Enter Youtube URL")
     upload_parser.add_argument("-t", "--title", help="Title of the video", required=True)
     upload_parser.add_argument("-sc", "--schedule", type=int, default=0, help="Schedule time in seconds")
@@ -30,6 +33,7 @@ if __name__ == "__main__":
     upload_parser.add_argument("-ai", "--ailabel", type=int, default=0)
     upload_parser.add_argument("-p", "--proxy", default="")
 
+
     # Show cookies
     show_parser = subparsers.add_parser("show", help="Show users and videos available for system.")
     show_parser.add_argument("-u", "--users", action='store_true', help="Shows all available cookie names")
@@ -38,20 +42,18 @@ if __name__ == "__main__":
     # Parse the command-line arguments
     args = parser.parse_args()
 
+    # ... all of your subcommand logic (login, upload, show) ...
+    # This part is correct and should not be changed.
     if args.subcommand == "login":
         if not hasattr(args, 'name') or args.name is None:
             parser.error("The 'name' argument is required for the 'login' subcommand.")
-        # Name of file to save the session id.
         login_name = args.name
-        # Name of file to save the session id.
         tiktok.login(login_name)
 
     elif args.subcommand == "upload":
-        # Obtain session id from the cookie name.
         if not hasattr(args, 'users') or args.users is None:
             parser.error("The 'cookie' argument is required for the 'upload' subcommand.")
         
-        # Check if source exists,
         if args.video is None and args.youtube is None:
             eprint("No source provided. Use -v or -yt to provide video source.")
             sys.exit(1)
@@ -76,7 +78,6 @@ if __name__ == "__main__":
         tiktok.upload_video(args.users, args.video,  args.title, args.schedule, args.comment, args.duet, args.stitch, args.visibility, args.brandorganic, args.brandcontent, args.ailabel, args.proxy)
 
     elif args.subcommand == "show":
-        # if flag is c then show cookie names
         if args.users:
             print("User Names logged in: ")
             cookie_dir = os.path.join(os.getcwd(), Config.get().cookies_dir)
@@ -84,7 +85,6 @@ if __name__ == "__main__":
                 if name.startswith("tiktok_session-"):
                     print(f'[-] {name.split("tiktok_session-")[1]}')
 
-        # if flag is v then show video names
         if args.videos:
             print("Video Names: ")
             video_dir = os.path.join(os.getcwd(), Config.get().videos_dir)
@@ -95,5 +95,3 @@ if __name__ == "__main__":
 
     else:
         eprint("Invalid subcommand. Use 'login' or 'upload' or 'show'.")
-
-
